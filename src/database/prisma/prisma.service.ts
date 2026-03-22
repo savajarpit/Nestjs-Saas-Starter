@@ -4,7 +4,8 @@ import {
   OnModuleDestroy,
   Logger,
 } from '@nestjs/common';
-import { PrismaClient } from '../../generated/prisma';
+import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -15,26 +16,15 @@ export class PrismaService
   private readonly logger = new Logger(PrismaService.name);
 
   constructor(private readonly config: ConfigService) {
-    super({
-      log: [
-        { emit: 'event', level: 'query' },
-        { emit: 'stdout', level: 'error' },
-        { emit: 'stdout', level: 'warn' },
-      ],
+    const adapter = new PrismaPg({
+      connectionString: config.get<string>('database.url') as string,
     });
+    super({ adapter });
   }
 
   async onModuleInit() {
     await this.$connect();
     this.logger.log('✅ Prisma connected to PostgreSQL');
-
-    if (this.config.get('app.nodeEnv') !== 'production') {
-      (this as any).$on('query', (e: any) => {
-        if (e.duration > 200) {
-          this.logger.warn(`🐢 Slow query (${e.duration}ms): ${e.query}`);
-        }
-      });
-    }
   }
 
   async onModuleDestroy() {

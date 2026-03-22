@@ -31,12 +31,11 @@ export class HealthController {
       () => this.memory.checkHeap('memory_heap', 512 * 1024 * 1024),
       () =>
         this.disk.checkStorage('storage', {
-          path: '/',
+          path: process.platform === 'win32' ? 'E:\\' : '/',
           thresholdPercent: 0.9,
         }),
     ]);
   }
-
   @Public()
   @SkipThrottle()
   @Get('ping')

@@ -9,7 +9,7 @@ import { HashUtil } from '../../common/utils/hash.util';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { OffsetPaginationDto } from '../../common/dto/pagination.dto';
-import { User } from '../../generated/prisma';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
